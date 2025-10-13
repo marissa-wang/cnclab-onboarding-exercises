@@ -1,3 +1,10 @@
+# =================================
+# Git Ignore File for Python
+# =================================
+
+# macOS system files
+**/.DS_Store
+
 # Python cache files
 __pycache__/
 *.pyc
@@ -6,5 +13,5 @@ __pycache__/
 venv/
 .env/
 
-# PyCharm / JetBrains
+# PyCharm / JetBrains project settings
 .idea/
