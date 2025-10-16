@@ -11,11 +11,11 @@ import seaborn as sns
 # "grating2AFC S11" probably stands for:
 #
 # grating -- the sinusoidal visual grating of the experiment
-# 2AFC -- 2-alternative forced choice (task), the subject is forced to pick between two
+# 2AFC -- 2-alternative forced choice (task); subject is forced to pick between two
 # S11 -- Subject 11. they ran this on multiple subjects for sure, and this is only one
 
 
-### ===== STEP 1: EXTRACT DATA ===== ###
+### ==================== STEP 1: EXTRACT DATA ==================== ###
 
 def load_data(filename):
     # grating2AFC S11.mat has the data we need in it! But it is binary/archive
@@ -63,10 +63,7 @@ def load_data(filename):
     # returns final dataframe :3
     return grating_df
 
-
-
-
-### ===== STEP 2: ANALYZE DATA ===== ###
+### ==================== STEP 2: ANALYZE DATA ==================== ###
 
 ## 1.1
 
@@ -75,9 +72,9 @@ def task_1_1(data, first_half_n_trials):
     # Splitting data into first/second halves
     # Add "whichHalf" column with "1-500" or "501-1000" as values
     data['whichHalf'] = np.where(
-        data.index < first_half_n_trials,   # condition
-        "1-500",                                 # value if T
-        "501-1000"                               # value if F
+        data.index < first_half_n_trials, # condition
+        "1-500",   # value if T
+        "501-1000" # value if F
     )
 
     # plot them!
@@ -115,10 +112,31 @@ def task_1_2(data, total_n_trials, first_half_n_trials):
 
     return result.pvalue
 
+## 1.3
 
-### ===== STEP 3: EXECUTE ALL ===== ###
+def task_1_3(filtered_trials_data):
+    # plot median RT for confidence levels 1-4
+    plot = sns.catplot(
+        data = filtered_trials_data,
+        x = "rating",
+        y = "responseRT",
+        kind = "bar",
+        estimator = np.median,
+        errorbar = None, # set equal to ("pi", 50) for error bar
+        color = "0.6"
+    )
+
+    plt.title("Median RT by Confidence Level")
+    plt.xlabel("Confidence Rating")
+    plt.ylabel("Median Reaction Time (s)")
+    plt.tight_layout()
+    plt.show()
+
+### ==================== STEP 3: EXECUTE ALL ==================== ###
 
 if __name__ == "__main__":
+    ### ==================== Prep ==================== ###
+
     # gimme dataframe :3
     loaded_data = load_data("grating2AFC S11.mat")
 
@@ -130,9 +148,13 @@ if __name__ == "__main__":
     # // floors the division, so it will always be exactly half or possibly less
     first_half_trials = total_trials // 2
 
+    ### ==================== 1.1 ==================== ###
+
     # RTs bar chart comparing first + second halves of experiment, with SEM error
     # bars
     #task_1_1(loaded_data, first_half_trials)
+
+    ### ==================== 1.2 ==================== ###
 
     # T-test to see if RTs for the first and second half of the experiment differed
     # significantly.
@@ -145,5 +167,12 @@ if __name__ == "__main__":
         "significant result."
     )
 
+    ### ==================== 1.3 ==================== ###
+
+    # Filtering out invalid data for confidence (negative numbers)
+    valid_data = loaded_data[loaded_data["rating"] > 0]
+
+    # Medians bar chart comparing between confidence levels of 1-4
+    task_1_3(valid_data)
 
 

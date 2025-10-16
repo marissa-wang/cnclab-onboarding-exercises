@@ -4,6 +4,8 @@ import scipy
 from matplotlib import pyplot as plt
 from rich import print
 
+# I had some external help, this is their code, and not mine.
+# check main.py for my rework + extra tasks completed
 
 class TrialData:
     def __init__(self, fn: str):
