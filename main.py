@@ -8,13 +8,6 @@ import matplotlib.pyplot as plt
 # TIL "seaborn" is from "samuel norman seaborn" => imported as sns
 import seaborn as sns
 
-# "grating2AFC S11" probably stands for:
-#
-# grating -- the sinusoidal visual grating of the experiment
-# 2AFC -- 2-alternative forced choice (task); subject is forced to pick between two
-# S11 -- Subject 11. they ran this on multiple subjects for sure, and this is only one
-
-
 ### ==================== STEP 1: EXTRACT DATA ==================== ###
 
 def load_data(filename):
@@ -78,14 +71,14 @@ def task_1_1(data, first_half_n_trials):
     )
 
     # plot them!
-    # (does catplot stand for category plot??)
-    plot = sns.catplot(
+    plt.figure(figsize=(5, 4))
+    sns.barplot(
         data = data, # cursed.
         x = "whichHalf",
         y = "responseRT",
-        kind = "bar",
         errorbar = "se",
-        color = "0.6"
+        capsize = 0.2,
+        color = "0.6",
     )
 
     # The fact I ended up having to import matplotlib for this in the end is... sad
@@ -115,15 +108,16 @@ def task_1_2(data, total_n_trials, first_half_n_trials):
 ## 1.3
 
 def task_1_3(filtered_trials_data):
-    # plot median RT for confidence levels 1-4
-    plot = sns.catplot(
+
+    # Plot median RT for confidence levels 1-4
+    plt.figure(figsize=(5, 4))
+    sns.barplot(
         data = filtered_trials_data,
         x = "rating",
         y = "responseRT",
-        kind = "bar",
-        estimator = np.median,
-        errorbar = None, # set equal to ("pi", 50) for error bar
-        color = "0.6"
+        estimator = np.median, # set equal to ("pi", 50) for error bar
+        errorbar = None,
+        color = "0.6",
     )
 
     plt.title("Median RT by Confidence Level")
@@ -132,10 +126,24 @@ def task_1_3(filtered_trials_data):
     plt.tight_layout()
     plt.show()
 
+## 1.4
+
+def task_1_4(filtered_trials_data):
+
+    #
+    return "placeholder"
+
 ### ==================== STEP 3: EXECUTE ALL ==================== ###
 
 if __name__ == "__main__":
+
     ### ==================== Prep ==================== ###
+
+    # "grating2AFC S11" probably stands for:
+    #
+    # grating -- the sinusoidal visual grating of the experiment
+    # 2AFC -- 2-alternative forced choice (task); subject is forced to pick between two
+    # S11 -- Subject 11. they ran this on multiple subjects for sure, and this is only one
 
     # gimme dataframe :3
     loaded_data = load_data("grating2AFC S11.mat")
@@ -152,7 +160,7 @@ if __name__ == "__main__":
 
     # RTs bar chart comparing first + second halves of experiment, with SEM error
     # bars
-    #task_1_1(loaded_data, first_half_trials)
+    task_1_1(loaded_data, first_half_trials)
 
     ### ==================== 1.2 ==================== ###
 
@@ -160,6 +168,7 @@ if __name__ == "__main__":
     # significantly.
     p_val = task_1_2(loaded_data, total_trials, first_half_trials)
     print(
+        "T-test results comparing RTs for first and second half of experiment:\n"
         f"p-value: {p_val:.3g}\n"
         "Using a metric of minimal significance at p <= 0.05, "
         "if this were displayed with a bar-chart, there would be a bracket with "
@@ -175,4 +184,8 @@ if __name__ == "__main__":
     # Medians bar chart comparing between confidence levels of 1-4
     task_1_3(valid_data)
 
+    ### ==================== 1.4 ==================== ###
+
+    # Calculating d' for confidence levels 1-4 respectively
+    #task_1_4(valid_data)
 
