@@ -13,7 +13,7 @@ def calc_d_prime(stim, resp):
 
     # Calculations here are based off of the equations
     # d' = Z(hit rate) - Z(false hit rate)
-    # with Z() finding the relevant z-score
+    # with Z() being finding the relevant z-score
 
     # Filter out invalid responses (negative codes)
     valid_mask = resp >= 0
