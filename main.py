@@ -7,10 +7,20 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 # TIL "seaborn" is from "samuel norman seaborn" => imported as sns
 import seaborn as sns
+# whoa, custom import !!
+from utils import d_prime as dp
+
 
 ### ==================== STEP 1: EXTRACT DATA ==================== ###
 
 def load_data(filename):
+    """
+    Takes in file name as a string and converts it to a pandas DataFrame.
+    Accepts .mat files.
+    :param filename:
+    :return:
+    """
+
     # grating2AFC S11.mat has the data we need in it! But it is binary/archive
     # format, so not directly viewable. Scipy to the rescue :3
 
@@ -61,6 +71,13 @@ def load_data(filename):
 ## 1.1
 
 def task_1_1(data, first_half_n_trials):
+    """
+    RTs bar chart comparing first + second halves of experiment, with SEM error
+    bars
+    :param data:
+    :param first_half_n_trials:
+    :return:
+    """
 
     # Splitting data into first/second halves
     # Add "whichHalf" column with "1-500" or "501-1000" as values
@@ -92,15 +109,23 @@ def task_1_1(data, first_half_n_trials):
 ## 1.2
 
 def task_1_2(data, total_n_trials, first_half_n_trials):
+    """
+    T-test to see if RTs for the first and second half of the experiment differed
+    significantly.
+    :param data:
+    :param total_n_trials:
+    :param first_half_n_trials:
+    :return:
+    """
 
     # Slice the "responseRT" series into two halves
-    first_half_RTs = data["responseRT"].iloc[:first_half_n_trials]
-    second_half_RTs = data["responseRT"].iloc[first_half_n_trials:total_n_trials]
+    first_half_rts = data["responseRT"].iloc[:first_half_n_trials]
+    second_half_rts = data["responseRT"].iloc[first_half_n_trials:total_n_trials]
 
     # run actual t-test
     result = stats.ttest_ind(
-        first_half_RTs,
-        second_half_RTs,
+        first_half_rts,
+        second_half_rts,
     )
 
     return result.pvalue
@@ -108,6 +133,11 @@ def task_1_2(data, total_n_trials, first_half_n_trials):
 ## 1.3
 
 def task_1_3(filtered_trials_data):
+    """
+    Bar chart comparing medians of confidence levels from 1 to 4
+    :param filtered_trials_data:
+    :return:
+    """
 
     # Plot median RT for confidence levels 1-4
     plt.figure(figsize=(5, 4))
@@ -120,7 +150,7 @@ def task_1_3(filtered_trials_data):
         color = "0.6",
     )
 
-    plt.title("Median RT by Confidence Level")
+    plt.title("Median Reaction Times by Confidence Level")
     plt.xlabel("Confidence Rating")
     plt.ylabel("Median Reaction Time (s)")
     plt.tight_layout()
@@ -128,10 +158,44 @@ def task_1_3(filtered_trials_data):
 
 ## 1.4
 
-def task_1_4(filtered_trials_data):
+def task_1_4(data):
+    """
+    Calculating d' for confidence levels 1-4 respectively, and plotting all together
+    :param data:
+    :return:
+    """
 
-    #
-    return "placeholder"
+    conf_levels = [1, 2, 3, 4]
+    d_primes = []
+    # we will add the according d' values in the loop below!
+
+    # goes through 1, 2, 3, and 4
+    for lvl in conf_levels:
+        # filter the data with the chosen confidence
+        subset = data[data["rating"] == lvl]
+        d_val = dp.calc_d_prime(subset["stimID"].values, subset["response"].values)
+        # add the calculated d' to the d_primes array (list, actually)
+        d_primes.append(d_val)
+
+    # plot!
+    plt.figure(figsize=(5, 4))
+    sns.barplot(
+        # no "data =" required here, since we passed in arrays.
+        # if we used a dataframe, we pass that as data, and then
+        # x and y refer to columns
+        x = conf_levels,
+        y = d_primes,
+        errorbar = None,
+        color = "0.6",
+    )
+
+    plt.title("d′ by Confidence Level")
+    plt.xlabel("Confidence Rating")
+    plt.ylabel("d′")
+    plt.tight_layout()
+    plt.show()
+
+    return d_primes
 
 ### ==================== STEP 3: EXECUTE ALL ==================== ###
 
@@ -169,7 +233,7 @@ if __name__ == "__main__":
     p_val = task_1_2(loaded_data, total_trials, first_half_trials)
     print(
         "T-test results comparing RTs for first and second half of experiment:\n"
-        f"p-value: {p_val:.3g}\n"
+        f"p-value: {p_val:.3g}\n" # .3g = 3 sigfigs w/ scientific notation
         "Using a metric of minimal significance at p <= 0.05, "
         "if this were displayed with a bar-chart, there would be a bracket with "
         "two asterisks (**) above it — as the p-val is less than 0.01. This is a "
@@ -181,11 +245,11 @@ if __name__ == "__main__":
     # Filtering out invalid data for confidence (negative numbers)
     valid_data = loaded_data[loaded_data["rating"] > 0]
 
-    # Medians bar chart comparing between confidence levels of 1-4
+    # Bar chart comparing medians of confidence levels from 1 to 4
     task_1_3(valid_data)
 
     ### ==================== 1.4 ==================== ###
 
     # Calculating d' for confidence levels 1-4 respectively
-    #task_1_4(valid_data)
+    task_1_4(loaded_data)
 
