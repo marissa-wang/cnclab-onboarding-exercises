@@ -56,7 +56,7 @@ e.g. —
 Except that flashes way faster in the experiment (on the order of milliseconds :')), and it probably wouldn't be that
 obvious, by design, because experimenters need false hits/alarms in order to properly run calculations on this kind of thing.
 Mandatory feeling bad, confused, and like an idiot during the experiment. Makes for some delicious varying d' and meta-d'
-values. (Sorry not sorry.)
+values. (Sorry not sorry. If anything, IRBs will make sure it won't get to Milgram levels of bad. Trust me.)
 
 ## 1.1
 1. Plot the mean reaction time for the first half of the experiment.
