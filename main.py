@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import scipy.io as sio
 import scipy.stats as stats
-import matplotlib.pyplot as plt
 # TIL "seaborn" is from "samuel norman seaborn" => imported as sns
 import seaborn as sns
-# whoa, custom import !!
-from utils import d_prime as dp
-
+# whoa, custom imports !!
+from utils.calc_d_prime import calc_d_prime
+from utils.meta_d.meta_d_prime_master import compute_meta_d_prime
 
 ### ==================== STEP 1: EXTRACT DATA ==================== ###
 
@@ -173,7 +173,8 @@ def task_1_4(data):
     for lvl in conf_levels:
         # filter the data with the chosen confidence
         subset = data[data["rating"] == lvl]
-        d_val = dp.calc_d_prime(subset["stimID"].values, subset["response"].values)
+        # converts pandas series into numpy arrays
+        d_val = calc_d_prime(subset["stimID"].to_numpy(), subset["response"].to_numpy())
         # add the calculated d' to the d_primes array (list, actually)
         d_primes.append(d_val)
 
@@ -195,7 +196,49 @@ def task_1_4(data):
     plt.tight_layout()
     plt.show()
 
-    return d_primes
+## 1.5
+
+def task_1_5(data, first_half_trials_in):
+    """
+    Calculate and plot meta-d' for the first and second halves of the experiment.
+    :param data: full dataframe
+    :param first_half_trials_in: number of trials in the first half (precomputed)
+    """
+
+    # Split data into halves
+    first_half = data[data.index < first_half_trials_in]
+    second_half = data[data.index >= first_half_trials_in]
+
+    fit_first = compute_meta_d_prime(first_half)
+    fit_second = compute_meta_d_prime(second_half)
+
+    # For checking meta-d' stats
+    """
+    print("=== First Half ===")
+    print(f"Meta-d': {fit_first['meta_da']:.3f}")
+    print(f"d': {fit_first['da']:.3f}")
+    print(f"M_ratio: {fit_first['M_ratio']:.3f}")
+    print(f"M_diff: {fit_first['M_diff']:.3f}")
+
+    print("\n=== Second Half ===")
+    print(f"Meta-d': {fit_second['meta_da']:.3f}")
+    print(f"d': {fit_second['da']:.3f}")
+    print(f"M_ratio: {fit_second['M_ratio']:.3f}")
+    print(f"M_diff: {fit_second['M_diff']:.3f}")
+    """
+
+    # Plot meta-d' for both halves
+    # I gave up on using seaborn let's just use matplotlib smh
+    plt.figure(figsize=(5, 4))
+    plt.bar(
+        ["First Half", "Second Half"],
+        [fit_first["meta_da"], fit_second["meta_da"]],
+        color="0.6"
+    )
+    plt.ylabel("meta-d′")
+    plt.title("Meta-d′: First vs Second Half")
+    plt.tight_layout()
+    plt.show()
 
 ### ==================== STEP 3: EXECUTE ALL ==================== ###
 
@@ -224,14 +267,16 @@ if __name__ == "__main__":
 
     # RTs bar chart comparing first + second halves of experiment, with SEM error
     # bars
-    task_1_1(loaded_data, first_half_trials)
+    #task_1_1(loaded_data, first_half_trials)
 
     ### ==================== 1.2 ==================== ###
 
     # T-test to see if RTs for the first and second half of the experiment differed
     # significantly.
     p_val = task_1_2(loaded_data, total_trials, first_half_trials)
+    """
     print(
+        "1.2: \n\n"
         "T-test results comparing RTs for first and second half of experiment:\n"
         f"p-value: {p_val:.3g}\n" # .3g = 3 sigfigs w/ scientific notation
         "Using a metric of minimal significance at p <= 0.05, "
@@ -239,6 +284,7 @@ if __name__ == "__main__":
         "two asterisks (**) above it — as the p-val is less than 0.01. This is a "
         "significant result."
     )
+    """
 
     ### ==================== 1.3 ==================== ###
 
@@ -246,10 +292,24 @@ if __name__ == "__main__":
     valid_data = loaded_data[loaded_data["rating"] > 0]
 
     # Bar chart comparing medians of confidence levels from 1 to 4
-    task_1_3(valid_data)
+    #task_1_3(valid_data)
 
     ### ==================== 1.4 ==================== ###
 
     # Calculating d' for confidence levels 1-4 respectively
-    task_1_4(loaded_data)
+    #task_1_4(loaded_data)
+
+    ### ==================== 1.5 ==================== ###
+
+    # Define valid ranges
+    valid_stim_mask = loaded_data["stimID"].isin([0, 1])
+    valid_resp_mask = loaded_data["response"].isin([0, 1])
+    valid_rating_mask = loaded_data["rating"].between(1, 4)  # assuming 4-point confidence
+
+    # Apply all filters at once
+    valid_data_2 = loaded_data[valid_stim_mask & valid_resp_mask & valid_rating_mask]
+
+    # Calculating and plotting meta-d' for first half and second half of experiment.
+    task_1_5(valid_data_2, first_half_trials)
+
 
