@@ -129,7 +129,7 @@ Ah, the dreaded meta-d'.
 
 ### and this was not part of the task, but:
 Just for fun, and with some help from ChatGPT ("credit" where credit is due), out of curiosity I also decided to plot
-a running means graph comparing confidence with the hit and false alarm rates. Got this interesting graphic:
+a rolling means graph comparing confidence with the hit and false alarm rates. Got this interesting graphic:
 
 <p style="text-align: center;">
  <img src="figures_images/supplementary.png" alt="Rolling Window Means For Hit, FA, and Confidence" width="600">
