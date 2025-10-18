@@ -47,7 +47,7 @@ where only one of the patches contained a sinusoidal (smooth periodic oscillatio
 - had to say (make an educated guess on.) which stimulus had the grating (left or right)
 - had to rate how confident they were that their answer was correct, on a scale of 1 to 4.
 
-- e.g. —
+e.g. —
 
 <p style="text-align: center;">
  <img src="figures_images/example_gabor_patch.png" alt="Example Gabor Patch" width="150">
