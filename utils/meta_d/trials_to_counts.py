@@ -106,7 +106,7 @@ def trials_to_counts(stim_id, response, rating, n_ratings, pad_cells=0, pad_amou
     response = temp_resp
     rating = temp_ratg
 
-    ''' set input defaults '''
+    ''' set input defaults ''' # Padding for log(0) errors.
     if pad_amount is None:
         pad_amount = 1 / (2 * n_ratings)
 

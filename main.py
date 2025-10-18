@@ -205,7 +205,7 @@ def task_1_5(data, first_half_trials_in):
     :param first_half_trials_in: number of trials in the first half (precomputed)
     """
 
-    # Split data into halves
+    # Split data into halves using boolean indexing/filters
     first_half = data[data.index < first_half_trials_in]
     second_half = data[data.index >= first_half_trials_in]
 
@@ -267,14 +267,13 @@ if __name__ == "__main__":
 
     # RTs bar chart comparing first + second halves of experiment, with SEM error
     # bars
-    #task_1_1(loaded_data, first_half_trials)
+    task_1_1(loaded_data, first_half_trials)
 
     ### ==================== 1.2 ==================== ###
 
     # T-test to see if RTs for the first and second half of the experiment differed
     # significantly.
     p_val = task_1_2(loaded_data, total_trials, first_half_trials)
-    """
     print(
         "1.2: \n\n"
         "T-test results comparing RTs for first and second half of experiment:\n"
@@ -284,7 +283,6 @@ if __name__ == "__main__":
         "two asterisks (**) above it — as the p-val is less than 0.01. This is a "
         "significant result."
     )
-    """
 
     ### ==================== 1.3 ==================== ###
 
@@ -292,12 +290,12 @@ if __name__ == "__main__":
     valid_data = loaded_data[loaded_data["rating"] > 0]
 
     # Bar chart comparing medians of confidence levels from 1 to 4
-    #task_1_3(valid_data)
+    task_1_3(valid_data)
 
     ### ==================== 1.4 ==================== ###
 
     # Calculating d' for confidence levels 1-4 respectively
-    #task_1_4(loaded_data)
+    task_1_4(loaded_data)
 
     ### ==================== 1.5 ==================== ###
 

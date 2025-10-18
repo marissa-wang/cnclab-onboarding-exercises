@@ -15,12 +15,14 @@ def compute_meta_d_prime(data, n_ratings=4, pad_cells=1):
     :return: fit dict (meta_d', d', M_ratio, M_diff)
     """
 
+    # number (of) responses (for) stimulus 1,
+    # number (of) responses (for) stimulus 2
     nr_s1, nr_s2 = trials_to_counts(
         data['stimID'],
         data['response'],
         data['rating'],
         n_ratings,
-        pad_cells=pad_cells
+        pad_cells=pad_cells # adds vals to all bins to prevent log(0) errors
     )
 
     # suppress warnings and optimizer chatter
